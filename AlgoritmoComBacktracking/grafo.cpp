@@ -19,6 +19,7 @@
 /* INCLUDES                                                                  */
 /* ------------------------------------------------------------------------- */
 #include "grafo.h"
+#include <iostream>
 #include <thread>
 
 /* ========================================================================= */
@@ -30,11 +31,17 @@ Grafo::Grafo(unsigned int ordem)
     this->_ordem0 = geraRaiz(ordem);
     this->_numeroVertices = ordem*ordem;
 
-    //inicializando a matriz de adjacencia
-   this->_matrizAdjacencia = new bool*[this->_numeroVertices];
+    this->_matrizAdjacencia = new bool*[this->_numeroVertices];
     for (unsigned int i = 0; i < this->_numeroVertices; i++)
         this->_matrizAdjacencia[i] = new bool[this->_numeroVertices];
     geraMatrizAdjacencia();
+
+
+    _saturacao = new int[_numeroVertices];
+
+    for(unsigned int i = 0; i < _numeroVertices; i++)
+        _saturacao[i] = 0;
+
 }
 
 Grafo::~Grafo()
@@ -94,10 +101,26 @@ void Grafo::geraMatrizAdjacencia()
 bool Grafo::grafoColorindo(unsigned int color[])
 {
 
-    if(!grafoColorindoAuxiliar(color,0))
+
+    int *saturacao = new int[_numeroVertices];
+
+    for(unsigned int i = 0; i < _numeroVertices; i++)
+    {
+        if(!color[i])
+            saturacao[i] = 0;
+        else
+            saturacao[i] = -1;
+    }
+
+
+
+
+
+    if(!grafoColorindoAuxiliar(color,0, saturacao))
         return false;
     else
         return true;
+
 }
 
 unsigned int Grafo::numeroVertices() const
@@ -115,16 +138,100 @@ unsigned int Grafo::ordem() const
     return _ordem;
 }
 
-
-bool Grafo::grafoColorindoAuxiliar(unsigned int color[], unsigned int contador)
+int Grafo::getSaturacaoMaior(int saturacao[],unsigned int cor[])
 {
 
-    if(contador == _numeroVertices)
+    int contador = 0;
+
+    int auxiliar;
+    int pos = 0;
+    for(unsigned int i = 0; i < _numeroVertices; i++)
+    {
+        if(saturacao[i] != -1 || cor[i] == 0)
+        {
+            auxiliar = 0;
+            for(unsigned int j = 0; j < _numeroVertices; j++)
+            {
+
+                if(_matrizAdjacencia[i][j]  && cor[j] > 0 )
+                    auxiliar ++;
+            }
+
+            if(pos < auxiliar)
+            {
+                pos = auxiliar;
+                contador = i;
+            }
+
+        }
+    }
+
+    saturacao[contador] = -1;
+    return contador;
+}
+
+bool Grafo::saturacaoCheia(int saturacao[])
+{
+    for(unsigned int i = 0; i < _numeroVertices; i++)
+    {
+        if(saturacao[i] != -1)
+            return true;
+
+    }
+
+    return false;
+}
+
+void Grafo::geraSaturacao(unsigned int color[])
+{
+     for(unsigned int i = 0; i < _numeroVertices; i++)
+     {
+        if(color[i])
+        {
+            _saturacao[i] = -1;
+        }
+        else
+            if(_saturacao[i] == -1)
+                _saturacao[i] = 0;
+    }
+}
+
+void Grafo::incrementaSaturacao(int contador, int saturacao[])
+{
+    for(unsigned int i = 0; i < _numeroVertices; i++)
+    {
+        if(_matrizAdjacencia[contador][i] &&  saturacao[i] != -1)
+        {
+            saturacao[i]++;
+        }
+    }
+}
+
+void Grafo::decrementaSaturacao(int contador,int saturacao[])
+{
+    for(unsigned int i = 0; i < _numeroVertices; i++)
+    {
+        if(_matrizAdjacencia[contador][i] &&  saturacao[i] > 0)
+        {
+            saturacao[i]--;
+        }
+    }
+}
+
+
+bool Grafo::grafoColorindoAuxiliar(unsigned int color[], unsigned int contador, int saturacao[])
+{
+
+
+    if(!saturacaoCheia(saturacao))
         return true;
 
-    if(color[contador])
+    int cor = getSaturacaoMaior(saturacao, color);
+
+    if(color[cor])
     {
-        if(grafoColorindoAuxiliar(color, contador +1))
+        saturacao[cor] = -1;
+        if(grafoColorindoAuxiliar(color, contador +1, saturacao))
             return true;
         else
             return false;
@@ -132,18 +239,25 @@ bool Grafo::grafoColorindoAuxiliar(unsigned int color[], unsigned int contador)
 
     for(unsigned int i = 1; i <= _ordem; i++)
     {
-
-        if(verificaCor(contador,color,i))
+        if(verificaCor(cor,color,i))
         {
-            if(color[contador] == 0)
-                color[contador] = i;
+            if(color[cor] == 0)
+            {
+                color[cor] = i;
+                saturacao[cor]    = -1;
 
-            if(grafoColorindoAuxiliar(color, contador +1))
+            }
+
+            if(grafoColorindoAuxiliar(color, contador +1, saturacao))
                 return true;
 
-            color[contador] = 0;
+            color[cor] = 0;
+
         }
     }
+
+
+    saturacao[cor] = 0;
     return false;
 }
 

@@ -1,33 +1,9 @@
-/*
- ===============================================================================
- ARQUIVO............: mainwindow.cpp
- COMENTARIOS........: Codigo responsavel por implementar a interface
- ===============================================================================
- AUTOR..............: Samuel Nata
-                      Thales Aguiar
-                      Vitor Godeiro
-                      Disciplina: Grafos - DIM0549
-                      Instituto Metropole Digital
-                      Universidade Federal do Rio Grande do Norte
-                      Natal, Rio Grande do Norte, Brasil
- ULTIMA MODIFICACAO.: 28 de maio de 2016
- ===============================================================================
-*/
-
-/* ========================================================================= */
-/* INCLUDES                                                                  */
-/* ------------------------------------------------------------------------- */
-#include <QMainWindow>
-#include "grafo.h"
-#include "tabuleiro.h"
-
-/* ========================================================================= */
-/* CLASSE MAINWINDOW                                                         */
-/* ------------------------------------------------------------------------- */
-
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QMainWindow>
+#include "grafo.h"
+#include "tabuleiro.h"
 
 namespace Ui {
 class MainWindow;
@@ -40,6 +16,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
 
 
     static void solucionaJogo(MainWindow *window);

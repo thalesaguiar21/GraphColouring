@@ -36,6 +36,17 @@ public:
     unsigned int numeroVertices() const;
     unsigned int ordem0() const;
     unsigned int ordem() const;
+    int *_saturacao;
+
+    int getSaturacaoMaior(int saturacao[],unsigned int cor[]);
+
+    bool saturacaoCheia(int saturacao[]);
+
+    void geraSaturacao(unsigned int color[]);
+
+    void incrementaSaturacao(int contador, int saturacao[]);
+
+    void decrementaSaturacao(int contador, int saturacao[]);
 
 private:
     bool **_matrizAdjacencia;
@@ -68,7 +79,7 @@ private:
      * @return  true, se posso colorir com aquela cor o determinado vertice.
      * @return  false, se nao posso colorir com aquele cor o determinado vertice.
      */
-    bool grafoColorindoAuxiliar(unsigned int color[], unsigned int contador);
+    bool grafoColorindoAuxiliar(unsigned int color[], unsigned int contador, int saturacao[]);
 
 
     /**

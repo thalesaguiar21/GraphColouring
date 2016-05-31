@@ -1,32 +1,18 @@
-/*
- ===============================================================================
- ARQUIVO............: mainwindow.cpp
- COMENTARIOS........: Codigo responsavel por implementar a interface
- ===============================================================================
- AUTOR..............: Samuel Nata
-                      Thales Aguiar
-                      Vitor Godeiro
-                      Disciplina: Grafos - DIM0549
-                      Instituto Metropole Digital
-                      Universidade Federal do Rio Grande do Norte
-                      Natal, Rio Grande do Norte, Brasil
- ULTIMA MODIFICACAO.: 28 de maio de 2016
- ===============================================================================
-*/
-
-
-/* ========================================================================= */
-/* INCLUDES                                                                  */
-/* ------------------------------------------------------------------------- */
-#include <string>
+#include <iostream>
+#include <stdlib.h>
 #include <thread>
+#include <QThread>
+#include <QDebug>
+#include <time.h>
+#include <cstdio>
+#include <unistd.h>
+#include <math.h>
+
+
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
-/*========================================================================== */
-/* CLASSE Interface                                                          */
-/* ------------------------------------------------------------------------- */
-
+#include <string>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -44,6 +30,8 @@ MainWindow::~MainWindow()
     delete _grafo;
     delete _tabela;
 }
+
+
 
 void MainWindow::on_btn_Atualizar_clicked()
 {
@@ -117,24 +105,26 @@ void MainWindow::on_btn_Solucionar_clicked()
     for(unsigned int i = 0; i <_grafo->numeroVertices(); i++)
         _tabela->_tabelaJogo[i] = list2[i].toInt();
 
+
     std::clock_t clock_1, clock_2;
     clock_1 = std::clock();
-    bool verificaSucesso =_grafo->grafoColorindo(_tabela->_tabelaJogo);
+    bool colorir = _grafo->grafoColorindo(_tabela->_tabelaJogo);
     clock_2 = std::clock();
     ui->tb_Jogo->setText(QString::fromStdString(_tabela->imprimeJogo()));
+    //auxiliar = false;
     std::string info;
-        info = "Ordem do sudoku: " + std::to_string(_grafo->ordem()) ;
-        info += "\nOrdem da grade menor: " + std::to_string(_grafo->ordem0());
-        info+= "\nNúmero de vértices: " + std::to_string(_grafo->numeroVertices());
-        ui->tb_Informacoes->setText(QString::fromStdString(info));
-        aux = ui->tb_Informacoes->toPlainText();
-        aux += "\nTempo para solucionar: ";
-        aux += QString::number((double)(clock_2-clock_1)/(double)CLOCKS_PER_SEC) + "s";
-        if(verificaSucesso)
-            aux+= "\nColoriu com sucesso.";
-        else
-            aux+= "\nProblema ao colorir, verifique o sudoku.";
-        ui->tb_Informacoes->setText(aux);
+    info = "Ordem do sudoku: " + std::to_string(_grafo->ordem()) ;
+    info += "\nOrdem da grade menor: " + std::to_string(_grafo->ordem0());
+    info+= "\nNúmero de vértices: " + std::to_string(_grafo->numeroVertices());
+    ui->tb_Informacoes->setText(QString::fromStdString(info));
+    aux = ui->tb_Informacoes->toPlainText();
+    aux += "\nTempo para solucionar: ";
+    aux += QString::number((double)(clock_2-clock_1)/(double)CLOCKS_PER_SEC) + "s";
+    if(colorir)
+        aux+= "\nColoriu com sucesso";
+    else
+        aux+= "\nErro para colorrir";
+    ui->tb_Informacoes->setText(aux);
 
 }
 
